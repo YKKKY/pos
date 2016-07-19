@@ -1,5 +1,3 @@
-'use strict';
-
 describe('pos', () => {
   let inputs;
 
@@ -15,9 +13,133 @@ describe('pos', () => {
       'ITEM000005',
       'ITEM000005'
     ];
+
   });
 
-  it('should print correct text', () => {
+  it('print count', () => {
+
+    let cartItems = [{item: {barcode: 'ITEM000001',
+                                name: '雪碧',
+                                unit: '瓶',
+                                price: 3.00},
+                        count: 5},
+                    {item: {barcode: 'ITEM000003',
+                            name: '荔枝',
+                            unit: '斤',
+                            price: 15.00},
+                      count: 2},
+                    {item: {barcode: 'ITEM000005',
+                            name: '方便面',
+                            unit: '袋',
+                            price: 4.50},
+                      count: 3}
+                    ];
+
+    expect(buildCartItems(inputs,loadAllItems())).toEqual(cartItems);
+
+  })
+
+  let cartItems = [{item: {barcode: 'ITEM000001',
+    name: '雪碧',
+    unit: '瓶',
+    price: 3.00},
+    count: 5},
+    {item: {barcode: 'ITEM000003',
+      name: '荔枝',
+      unit: '斤',
+      price: 15.00},
+      count: 2},
+    {item: {barcode: 'ITEM000005',
+      name: '方便面',
+      unit: '袋',
+      price: 4.50},
+      count: 3}
+  ];
+  it('print total',() =>{
+
+    let cartItemsTotal = [{cartItem:{item: {barcode: 'ITEM000001',
+                                            name: '雪碧',
+                                            unit: '瓶',
+                                            price: 3.00},
+                                      count: 5},
+
+                            subTotal:12.00,
+                            save:3.00
+                            },
+                          {cartItem: {item: {barcode: 'ITEM000003',
+                                              name: '荔枝',
+                                              unit: '斤',
+                                              price: 15.00},
+                                      count: 2},
+                                subTotal:30.00,
+                                save:0.0
+                          },
+                          {cartItem: {item: {barcode: 'ITEM000005',
+                                              name: '方便面',
+                                              unit: '袋',
+                                              price: 4.50},
+                                       count: 3},
+                            subTotal:9.00,
+                            save:4.5
+                            }
+                            ];
+
+    expect(buildCartItemsTotal(cartItems,loadPromotions())).toEqual(cartItemsTotal);
+  })
+/*
+  let cartItemsTotal = [{cartItem:{item: {barcode: 'ITEM000001',
+    name: '雪碧',
+    unit: '瓶',
+    price: 3.00},
+    count: 5},
+
+    subtotal:12.00},
+    {cartItem: {item: {barcode: 'ITEM000003',
+      name: '荔枝',
+      unit: '斤',
+      price: 15.00},
+      count: 2},
+      subtotal:30.00},
+    {cartItem: {item: {barcode: 'ITEM000005',
+      name: '方便面',
+      unit: '袋',
+      price: 4.50},
+      count: 3},
+      subtotal:9.00}
+  ];*/
+
+  /*it ('print save' ,()=>{
+
+    let total= {
+      cartItemsTotal: [{cartItem:{item: {barcode: 'ITEM000001',
+                        name: '雪碧',
+                        unit: '瓶',
+                        price: 3.00},
+                        count: 5},
+
+                        subtotal:12.00},
+                        {cartItem: {item: {barcode: 'ITEM000003',
+                          name: '荔枝',
+                          unit: '斤',
+                          price: 15.00},
+                          count: 2},
+                          subtotal:30.00},
+                        {cartItem: {item: {barcode: 'ITEM000005',
+                          name: '方便面',
+                          unit: '袋',
+                          price: 4.50},
+                          count: 3},
+                          subtotal:9.00}],
+      total:71.0,
+      save:7.5
+    }
+
+  })*/;
+  /**/
+
+
+
+  /*it('should print correct text', () => {
 
     spyOn(console, 'log');
 
@@ -33,5 +155,6 @@ describe('pos', () => {
 **********************`;
 
     expect(console.log).toHaveBeenCalledWith(expectText);
-  });
+  });*/
 });
+

@@ -46,3 +46,48 @@ describe('pos', () => {
     expect(console.log).toHaveBeenCalledWith(expectText);
   });
 });
+
+describe('buildItems',()=>{
+   let  inputs;
+
+  beforeEach(() => {
+    inputs = [
+      {
+        barcode: 'ITEM000000',
+        name: '可口可乐',
+        unit: '瓶',
+        price: 3.00
+      },
+      {
+        barcode: 'ITEM000001',
+        name: '雪碧',
+        unit: '瓶',
+        price: 3.00
+      },
+      {
+        barcode: 'ITEM000004',
+        name: '电池',
+        unit: '个',
+        price: 2.00
+      }
+    ];
+  });
+  it('should print correct text', () => {
+     let items=[];
+
+     const items=[{barcode:'ITEM000000',count:5.0},
+                  {barcode:'ITEM000001',count:2.0},
+                  {barcode:'ITEM000004',count:1.0}
+                  ];
+
+
+
+  })
+
+
+
+
+
+
+
+})

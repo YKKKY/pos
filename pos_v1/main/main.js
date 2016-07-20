@@ -76,20 +76,20 @@ let buildTotal=(cartItems)=>{
   return total;
 }
 
+
 let buildPrint=(total)=>{
-  let expectText=`***<没钱赚商店>收据***\n`;
-  for(let cart of total.cartItems){
 
-    expectText +=`名称：`+cart.cartItem.item.name
-      +`，数量：`+cart.cartItem.count +cart.cartItem.item.unit
-      +`，单价：`+cart.cartItem.item.price.toFixed(2)
-      + `(元)，小计：`+cart.subtotal.toFixed(2)+`(元)\n`;
-  }
-  expectText+=`----------------------
-总计：`+total.subtotal.toFixed(2)+ `(元)
-节省：`+total.subSave.toFixed(2)+`(元)
+  let  expectText=total.cartItems.map(cart =>{
+    return `名称：${cart.cartItem.item.name}，\
+数量：${cart.cartItem.count}${cart.cartItem.item.unit}，\
+单价：${cart.cartItem.item.price.toFixed(2)}(元)，\
+小计：${cart.subtotal.toFixed(2)}(元)`}).join('\n');
+  
+ return  `***<没钱赚商店>收据***
+${expectText}
+----------------------
+总计：${total.subtotal.toFixed(2)}(元)
+节省：${total.subSave.toFixed(2)}(元)
 **********************`;
-
- return expectText;
- }
+};
 

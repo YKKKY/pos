@@ -1,95 +1,98 @@
 'use strict';
-let printReceipt=(inputs)=>{
-  let allItems=loadAllItems();
-  let promotions=loadPromotions();
+function printReceipt(tags){
+  const allItems=loadAllItems();
+  const promotions=loadPromotions();
 
-  let cartItems=buildCartItems(inputs, allItems);
-      cartItems=buildCartItemsTotal(cartItems,promotions);
-  let total=buildTotal(cartItems);
-  let expectText=buildPrint(total);
-    console.log(expectText);
+  const cartItems=buildCartItems(tags,allItems);
+  const receiptItems=buildReceiptItems(cartItems,promotions);
+  const receipt=buildReceipt(receiptItems);
+  const receiptText=buildReceiptText(receipt);
+
+  console.log(receiptText);
 }
 
-let buildCartItems = (inputs, allItems)=> {
+function buildCartItems(tags,allItems){
 
-  let cartItems = [];
-  for (let input of inputs) {
-    let spiltBarcode = input.split("-");
-    let barcode = spiltBarcode[0];
-    let count = parseFloat(spiltBarcode[1] || 1);
+  let cartItems=[];
 
-    let cartItem = cartItems.find((cartItem)=> {
-      return cartItem.item.barcode === barcode;
-    });
+  for(const  tag of tags ){
+    const splitBarcode=tag.split("-");
+    const barcode=splitBarcode[0];
+    const count=parseFloat(splitBarcode[1]||1);
 
-    if (cartItem) {
-      cartItem.count++;
-    } else {
-      const item = allItems.find((item)=> {
-        return item.barcode === barcode;
-      });
-      cartItems.push({item: item, count: count});
+    const cartItem=cartItems.find(cartItem=>cartItem.item.barcode===barcode);
+    if(cartItem){
+      cartItem.count+=count;
+    }else{
+      const item=allItems.find(item=>item.barcode===barcode)
+      cartItems.push({item,count});
     }
   }
+
   return cartItems;
-};
+}
+function buildReceiptItems(cartItems,promotions) {
 
-let buildCartItemsTotal =(cartItems,promotions)=> {
-  return cartItems.map(cartItem => {
-    let promotionType = getPromotionType(cartItem.item.barcode, promotions);
-    let {subtotal,save}=discount(cartItem, promotionType);
+  return cartItems.map(cartItem=> {
 
-    return {cartItem, subtotal, save};
+    const promotionType =findPromotionType(cartItem.item.barcode, promotions);
+    const {save,subtotal}=discount(cartItem.item.price,
+      cartItem.count, promotionType);
+    return {cartItem, save, subtotal}
   });
 }
+function findPromotionType(barcode,promotions){
 
-let getPromotionType=(barcode,promotions)=>{
-  let  promotion=promotions.find(promotion =>
-    promotion.barcodes.includes(barcode)
-  );
-  return promotion ? promotion.type :'';
+  const promotion=promotions.find(promotion=>
+    promotion.barcodes.some(b=>b===barcode));
+
+  return promotion ?promotion.type:undefined;
 }
 
-let discount=(cartItem, promotionType)=>{
-  let freeItemCount=0;
-  if(promotionType==='BUY_TWO_GET_ONE_FREE'){
-    freeItemCount=parseInt(cartItem.count/3);
-  }
+function discount(price,count,promotion){
+  let subtotal=price*count;
+  let save=0;
 
-  let save=freeItemCount*cartItem.item.price;
-  let subtotal=cartItem.count*cartItem.item.price-save;
+  if(promotion==='BUY_TWO_GET_ONE_FREE'){
+    save=parseInt(count/3)*price;
+  }
+  subtotal-=save;
 
   return {save,subtotal};
-};
-
-let buildTotal=(cartItems)=>{
-  let total={};
-  let subtotal=0.0;
-  let subSave=0.0;
-
-  for(let cart of cartItems){
-    subSave+=cart.save;
-    subtotal+=cart.subtotal;
-  }
-
-  total={cartItems,subtotal,subSave};
-  return total;
 }
 
+function buildReceipt(receiptItems){
 
-let buildPrint=(total)=>{
+  let subtotal=0;
+  let save=0;
 
-  let  expectText=total.cartItems.map(cart =>{
-    return `名称：${cart.cartItem.item.name}，\
-数量：${cart.cartItem.count}${cart.cartItem.item.unit}，\
-单价：${cart.cartItem.item.price.toFixed(2)}(元)，\
-小计：${cart.subtotal.toFixed(2)}(元)`}).join('\n');
-  
- return  `***<没钱赚商店>收据***
-${expectText}
+  for (const  receiptItem of receiptItems){
+    subtotal+=receiptItem.subtotal;
+    save    +=receiptItem.save;
+  }
+  return {receiptItems,save,subtotal};
+}
+
+function buildReceiptText(receipt) {
+  let receiptItemsText = receipt.receiptItems.map(receiptItem=> {
+
+    const cartItems = receiptItem.cartItem;
+    return `名称：${cartItems.item.name}，\
+数量：${cartItems.count}${cartItems.item.unit}，\
+单价：${formatMoney(cartItems.item.price)}(元)，\
+小计：${formatMoney(receiptItem.subtotal)}(元)`;
+  }).join('\n');
+
+  return `***<没钱赚商店>收据***
+${receiptItemsText}
 ----------------------
-总计：${total.subtotal.toFixed(2)}(元)
-节省：${total.subSave.toFixed(2)}(元)
-**********************`;
-};
+总计：${formatMoney(receipt.subtotal)}(元)
+节省：${formatMoney(receipt.save)}(元)
+**********************`
+}
+
+function  formatMoney(money){
+  return money.toFixed(2);
+}
+
 
